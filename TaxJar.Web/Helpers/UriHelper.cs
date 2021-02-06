@@ -11,6 +11,11 @@ namespace TaxJar.Api.Helpers
         {
         }
 
+        public Uri CreateUri(string baseUrl, string endpoint)
+        {
+            return new Uri($"{baseUrl}{endpoint}");
+        }
+
         public Uri CreateUri(string baseUrl, string endpoint, string id)
         {
             return new Uri($"{baseUrl}{endpoint}/{id}");

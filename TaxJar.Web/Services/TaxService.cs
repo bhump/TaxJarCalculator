@@ -4,6 +4,7 @@ using AutoMapper;
 using TaxJar.Api.Interfaces;
 using TaxJar.Api.Models;
 using TaxJar.Api.Models.Requests;
+using TaxJar.Api.Models.Responses;
 
 namespace TaxJar.Api.Services
 {
@@ -18,12 +19,18 @@ namespace TaxJar.Api.Services
             this.mapper = mapper;
         }
 
-        public Task<OrderModel> Calculate(TaxCalculationRequest request)
+        public async Task<OrderModel> Calculate(TaxCalculationRequest request)
         {
-            throw new NotImplementedException();
+            OrderModel mapped = mapper.Map<OrderModel>(request);
+
+            TaxJarCalculateResponse response = null;
+
+            response = await taxRepository.Post<OrderModel, TaxJarCalculateResponse>(mapped);
+
+            return mapper.Map<OrderModel>(response);
         }
 
-        public async Task<string> GetTaxRates()
+        public Task<string> GetTaxRates()
         {
             throw new NotImplementedException();
         }

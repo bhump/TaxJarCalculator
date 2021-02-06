@@ -11,6 +11,7 @@ using TaxJar.Api.Constants;
 using TaxJar.Api.HttpClients;
 using TaxJar.Api.Interfaces;
 using TaxJar.Api.Models;
+using TaxJar.Api.Models.Requests;
 
 namespace TaxJar.Api.Repositories
 {
@@ -19,6 +20,7 @@ namespace TaxJar.Api.Repositories
         private readonly IUriHelper uriHelper;
         private readonly IMapper mapper;
         private readonly ITaxRateHttpClient taxRateHttpClient;
+        private readonly string baseUrl = UrlConstants.BaseUrl;
 
         public TaxRepository(IUriHelper uriHelper, IMapper mapper, ITaxRateHttpClient taxRateHttpClient)
         {
@@ -45,7 +47,7 @@ namespace TaxJar.Api.Repositories
                 throw new ArgumentNullException(nameof(id), "Zip cannot be null or empty");
             }
 
-            Uri uri = uriHelper.CreateUri(UrlConstants.BaseUrl, UrlConstants.Rates, id);
+            Uri uri = uriHelper.CreateUri(baseUrl, UrlConstants.Rates, id);
 
             HttpResponseMessage response = await taxRateHttpClient.Client.GetAsync(uri);
 
@@ -66,7 +68,7 @@ namespace TaxJar.Api.Repositories
 
                 string query = uriHelper.CreateQueryString(queryObject);
 
-                var url = uriHelper.CreateUri(UrlConstants.BaseUrl, UrlConstants.Rates, zip, query);
+                var url = uriHelper.CreateUri(baseUrl, UrlConstants.Rates, zip, query);
 
                 HttpResponseMessage response = await taxRateHttpClient.Client.GetAsync(url);
 
@@ -89,7 +91,28 @@ namespace TaxJar.Api.Repositories
 
         public async Task<Tout> Post<Tin, Tout>(Tin request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                OrderModel orderModelMapped = mapper.Map<Tin, OrderModel>(request);
+
+                TaxJarCalculateRequest mapped = mapper.Map<OrderModel, TaxJarCalculateRequest>(orderModelMapped);
+
+                Uri uri = uriHelper.CreateUri(baseUrl, UrlConstants.Taxes);
+
+                string json = JsonConvert.SerializeObject(mapped);
+
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await taxRateHttpClient.Client.PostAsync(uri, content);
+
+                string responseContent = await response.Content.ReadAsStringAsync();
+
+                return JsonConvert.DeserializeObject<Tout>(responseContent);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public Task<Tout> Put<Tin, Tout>(Tin request)

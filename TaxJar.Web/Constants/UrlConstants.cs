@@ -6,5 +6,7 @@ namespace TaxJar.Api.Constants
         public const string BaseUrl = "https://api.taxjar.com/v2";
 
         public const string Rates = "/rates";
+
+        public const string Taxes = "/taxes";
     }
 }

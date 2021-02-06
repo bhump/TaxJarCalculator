@@ -41,7 +41,7 @@ namespace TaxJar.Api.Models.Requests
         public int Amount;
 
         [JsonProperty("shipping")]
-        public double Shipping;
+        public float Shipping;
 
         [JsonProperty("nexus_addresses")]
         public List<NexusAddress> NexusAddresses;

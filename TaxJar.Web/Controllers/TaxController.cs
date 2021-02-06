@@ -54,6 +54,11 @@ namespace TaxJar.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] TaxCalculationRequest request)
         {
+            if(request == null)
+            {
+                return BadRequest("Invalid Request");
+            }
+
             if (string.IsNullOrEmpty(request.ClientId))
             {
                 return BadRequest("ClientId is Required");

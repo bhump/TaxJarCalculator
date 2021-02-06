@@ -15,6 +15,10 @@ namespace TaxJar.Api.AutoMapping
             CreateMap<TaxRateModel, TaxRateResponse>();
             CreateMap<TaxRateRequest, TaxRateModel>();
             CreateMap(typeof(Source<>), typeof(Destination<>));
+            CreateMap<TaxCalculationRequest, OrderModel>();
+            CreateMap<OrderModel, TaxCalculationRequest>();
+            CreateMap<TaxJarCalculateResponse, OrderModel>();
+            CreateMap<OrderModel, TaxJarCalculateRequest>().ConvertUsing<OrderModelToTaxJarRequestConverter>();
         }
     }
 
