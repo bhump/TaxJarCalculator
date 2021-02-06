@@ -34,6 +34,8 @@ namespace TaxJar.Api
             services.AddSingleton<ITaxService, TaxService>();
             services.AddSingleton<IUriHelper, UriHelper>();
             services.AddSingleton<ITaxRateHttpClient, TaxRateHttpClient>();
+            services.AddSingleton<IProductService, ProductService>();
+            services.AddSingleton<IClientService, ClientService>();
 
             services.AddAutoMapper(typeof(Startup));
         }

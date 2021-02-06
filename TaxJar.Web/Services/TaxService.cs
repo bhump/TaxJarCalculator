@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using TaxJar.Api.Interfaces;
@@ -11,23 +12,44 @@ namespace TaxJar.Api.Services
     public class TaxService : ITaxService
     {
         private readonly ITaxRepository taxRepository;
+        private readonly IProductService productService;
+        private readonly IClientService clientService;
         private readonly IMapper mapper;
 
-        public TaxService(ITaxRepository taxRepository, IMapper mapper)
+        public TaxService(ITaxRepository taxRepository, IMapper mapper, IClientService clientService, IProductService productService)
         {
             this.taxRepository = taxRepository;
             this.mapper = mapper;
+            this.productService = productService;
+            this.clientService = clientService;
         }
 
-        public async Task<OrderModel> Calculate(TaxCalculationRequest request)
+        public async Task<TaxJarCalculateResponse> Calculate(TaxCalculationRequest request)
         {
             OrderModel mapped = mapper.Map<OrderModel>(request);
+
+            //NOTE: Returning mocked data so clientId isn't used right now
+            ClientModel client = clientService.GetClient(mapped.ClientId);
+            ProductModel product = productService.GetProduct(request.ProductId);
+
+            var lineItems = new List<Models.LineItem>
+            {
+                mapper.Map<Models.LineItem>(product)
+            };
+
+            mapped.LineItems = lineItems;
+            mapped.FromCity = client.City;
+            mapped.FromCountry = client.Country;
+            mapped.FromState = client.State;
+            mapped.FromStreet = client.Street;
+            mapped.FromZip = client.Zip;
 
             TaxJarCalculateResponse response = null;
 
             response = await taxRepository.Post<OrderModel, TaxJarCalculateResponse>(mapped);
 
-            return mapper.Map<OrderModel>(response);
+            //TODO: Add mapping to TaxCalculationResposne, but for sake of time, return object from TaxJar. I would like to flatten this response out eventually.
+            return response;
         }
 
         public Task<string> GetTaxRates()

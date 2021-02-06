@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="TaxJar.Views.RatesPage">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Text="Go"
+            Command="{Binding GetTaxRateCommand}" />
+    </ContentPage.ToolbarItems>
+    <ContentPage.Content>
+        <StackLayout>
+            <StackLayout>
+                <Entry
+                    Placeholder="Zip"
+                    Text=""></Entry>
+                <Entry
+                    Placeholder="Country"
+                    Text=""></Entry>
+            </StackLayout>
+            <ScrollView>
+                <StackLayout>
+                    <Label Text="{Binding State}"></Label>
+                    <Label Text="{Binding StateRate}"></Label>
+                    <Label Text="{Binding CountyRate}"></Label>
+                    <Label Text="{Binding CityRate}"></Label>
+                    <Label Text="{Binding CombindedDistrictRate}"></Label>
+                    <Label Text="{Binding CombindedRate}"></Label>
+                    <Label Text="{Binding FreightTaxable}"></Label>
+                    <Label Text="{Binding StandardRate}"></Label>
+                    <Label Text="{Binding ReducedRate}"></Label>
+                    <Label Text="{Binding SuperReducedRate}"></Label>
+                    <Label Text="{Binding ParkingRate}"></Label>
+                    <Label Text="{Binding DistanceSaleThreshold}"></Label>
+                </StackLayout>
+            </ScrollView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

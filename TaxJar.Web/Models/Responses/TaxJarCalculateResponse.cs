@@ -32,97 +32,97 @@ namespace TaxJar.Api.Models.Responses
         public string Id;
 
         [JsonProperty("taxable_amount")]
-        public int TaxableAmount;
+        public float TaxableAmount;
 
         [JsonProperty("tax_collectable")]
-        public double TaxCollectable;
+        public float TaxCollectable;
 
         [JsonProperty("combined_tax_rate")]
-        public double CombinedTaxRate;
+        public float CombinedTaxRate;
 
         [JsonProperty("state_taxable_amount")]
-        public int StateTaxableAmount;
+        public float StateTaxableAmount;
 
         [JsonProperty("state_sales_tax_rate")]
-        public double StateSalesTaxRate;
+        public float StateSalesTaxRate;
 
         [JsonProperty("state_amount")]
-        public double StateAmount;
+        public float StateAmount;
 
         [JsonProperty("county_taxable_amount")]
-        public int CountyTaxableAmount;
+        public float CountyTaxableAmount;
 
         [JsonProperty("county_tax_rate")]
-        public double CountyTaxRate;
+        public float CountyTaxRate;
 
         [JsonProperty("county_amount")]
-        public double CountyAmount;
+        public float CountyAmount;
 
         [JsonProperty("city_taxable_amount")]
-        public int CityTaxableAmount;
+        public float CityTaxableAmount;
 
         [JsonProperty("city_tax_rate")]
-        public int CityTaxRate;
+        public float CityTaxRate;
 
         [JsonProperty("city_amount")]
-        public int CityAmount;
+        public float CityAmount;
 
         [JsonProperty("special_district_taxable_amount")]
-        public int SpecialDistrictTaxableAmount;
+        public float SpecialDistrictTaxableAmount;
 
         [JsonProperty("special_tax_rate")]
-        public double SpecialTaxRate;
+        public float SpecialTaxRate;
 
         [JsonProperty("special_district_amount")]
-        public double SpecialDistrictAmount;
+        public float SpecialDistrictAmount;
     }
 
     public class Breakdown
     {
         [JsonProperty("taxable_amount")]
-        public int TaxableAmount;
+        public float TaxableAmount;
 
         [JsonProperty("tax_collectable")]
-        public double TaxCollectable;
+        public float TaxCollectable;
 
         [JsonProperty("combined_tax_rate")]
-        public double CombinedTaxRate;
+        public float CombinedTaxRate;
 
         [JsonProperty("state_taxable_amount")]
-        public int StateTaxableAmount;
+        public float StateTaxableAmount;
 
         [JsonProperty("state_tax_rate")]
-        public double StateTaxRate;
+        public float StateTaxRate;
 
         [JsonProperty("state_tax_collectable")]
-        public double StateTaxCollectable;
+        public float StateTaxCollectable;
 
         [JsonProperty("county_taxable_amount")]
-        public int CountyTaxableAmount;
+        public float CountyTaxableAmount;
 
         [JsonProperty("county_tax_rate")]
-        public double CountyTaxRate;
+        public float CountyTaxRate;
 
         [JsonProperty("county_tax_collectable")]
-        public double CountyTaxCollectable;
+        public float CountyTaxCollectable;
 
         [JsonProperty("city_taxable_amount")]
-        public int CityTaxableAmount;
+        public float CityTaxableAmount;
 
         [JsonProperty("city_tax_rate")]
-        public int CityTaxRate;
+        public float CityTaxRate;
 
         [JsonProperty("city_tax_collectable")]
-        public int CityTaxCollectable;
+        public float CityTaxCollectable;
 
         [JsonProperty("special_district_taxable_amount")]
-        public int SpecialDistrictTaxableAmount;
+        public float SpecialDistrictTaxableAmount;
 
         [JsonProperty("special_tax_rate")]
-        public double SpecialTaxRate;
+        public float SpecialTaxRate;
 
         [JsonProperty("special_district_tax_collectable")]
-        public double SpecialDistrictTaxCollectable;
+        public float SpecialDistrictTaxCollectable;
 
         [JsonProperty("line_items")]
         public List<LineItem> LineItems;
@@ -131,19 +131,19 @@ namespace TaxJar.Api.Models.Responses
     public class Tax
     {
         [JsonProperty("order_total_amount")]
-        public double OrderTotalAmount;
+        public float OrderTotalAmount;
 
         [JsonProperty("shipping")]
-        public double Shipping;
+        public float Shipping;
 
         [JsonProperty("taxable_amount")]
-        public int TaxableAmount;
+        public float TaxableAmount;
 
         [JsonProperty("amount_to_collect")]
-        public double AmountToCollect;
+        public float AmountToCollect;
 
         [JsonProperty("rate")]
-        public double Rate;
+        public float Rate;
 
         [JsonProperty("has_nexus")]
         public bool HasNexus;

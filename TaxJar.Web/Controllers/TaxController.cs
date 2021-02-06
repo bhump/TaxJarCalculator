@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TaxJar.Api.Interfaces;
 using TaxJar.Api.Models;
 using TaxJar.Api.Models.Requests;
@@ -42,7 +43,7 @@ namespace TaxJar.Api.Controllers
 
                 TaxRateModel taxRate = await taxService.GetTaxRates(request);
 
-                return Ok(mapper.Map<TaxRateResponse>(taxRate));
+                return Ok(JsonConvert.SerializeObject(mapper.Map<TaxRateResponse>(taxRate)));
             }
             catch (Exception ex)
             {
@@ -79,9 +80,9 @@ namespace TaxJar.Api.Controllers
                 return BadRequest("Total amount to Ship is Required");
             }
 
-            OrderModel calculation = await taxService.Calculate(request);
+            TaxJarCalculateResponse calculation = await taxService.Calculate(request);
 
-            return Ok();
+            return Ok(JsonConvert.SerializeObject(calculation));
         }
 
         // PUT api/values/5

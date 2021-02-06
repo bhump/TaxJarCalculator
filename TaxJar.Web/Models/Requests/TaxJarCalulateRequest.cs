@@ -83,10 +83,10 @@ namespace TaxJar.Api.Models.Requests
         public string ProductTaxCode;
 
         [JsonProperty("unit_price")]
-        public int UnitPrice;
+        public float UnitPrice;
 
         [JsonProperty("discount")]
-        public int Discount;
+        public float Discount;
     }
 }
 

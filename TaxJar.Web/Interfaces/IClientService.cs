@@ -4,8 +4,8 @@ using TaxJar.Api.Models;
 
 namespace TaxJar.Api.Interfaces
 {
-    public interface ITaxRepository : IBaseRepository
+    public interface IClientService
     {
-        Task<Tout> Get<Tin, Tout>(Tin request);
+        ClientModel GetClient(string id);
     }
 }

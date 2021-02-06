@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using TaxJar.Api.Models;
 using TaxJar.Api.Models.Requests;
+using TaxJar.Api.Models.Responses;
 
 namespace TaxJar.Api.Interfaces
 {
@@ -11,6 +12,6 @@ namespace TaxJar.Api.Interfaces
 
         Task<TaxRateModel> GetTaxRates(TaxRateRequest request);
 
-        Task<OrderModel> Calculate(TaxCalculationRequest request);
+        Task<TaxJarCalculateResponse> Calculate(TaxCalculationRequest request);
     }
 }

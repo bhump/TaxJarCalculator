@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using AutoMapper;
 using TaxJar.Api.Converters;
 using TaxJar.Api.Models;
@@ -19,6 +20,10 @@ namespace TaxJar.Api.AutoMapping
             CreateMap<OrderModel, TaxCalculationRequest>();
             CreateMap<TaxJarCalculateResponse, OrderModel>();
             CreateMap<OrderModel, TaxJarCalculateRequest>().ConvertUsing<OrderModelToTaxJarRequestConverter>();
+            CreateMap<Models.LineItem, ProductModel>();
+            CreateMap<List<ProductModel>, List<Models.LineItem>>();
+            CreateMap<ProductModel, Models.LineItem>();
+            CreateMap<TaxJarCalculateResponse, TaxCalculationResponse>();
         }
     }
 

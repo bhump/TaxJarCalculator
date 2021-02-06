@@ -1,9 +1,5 @@
-﻿using System;
-using Xamarin.Essentials;
+﻿using Xamarin.Essentials;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
-using TaxJar.Services;
-using TaxJar.Views;
 
 namespace TaxJar
 {
@@ -20,11 +16,8 @@ namespace TaxJar
         {
             InitializeComponent();
 
-            if (UseMockDataStore)
-                DependencyService.Register<MockDataStore>();
-            else
-                DependencyService.Register<AzureDataStore>();
-            MainPage = new MainPage();
+            var boostrapper = new Bootstrapper();
+            boostrapper.Initialize(new AppModule());
         }
 
         protected override void OnStart()

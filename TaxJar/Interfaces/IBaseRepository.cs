@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace TaxJar.Api.Interfaces
+namespace TaxJar.Interfaces
 {
     public interface IBaseRepository
     {

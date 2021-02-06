@@ -7,10 +7,12 @@ using Xamarin.Forms;
 
 using TaxJar.Models;
 using TaxJar.Services;
+using TaxJar.Interfaces;
+using TaxJar.Extensions;
 
 namespace TaxJar.ViewModels
 {
-    public class BaseViewModel : INotifyPropertyChanged
+    public class BaseViewModel : ExtendedBindableObject, IViewModel
     {
         public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
 
