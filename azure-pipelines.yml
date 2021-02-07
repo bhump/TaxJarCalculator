@@ -1,0 +1,319 @@
+# Xamarin.iOS
+# Build a Xamarin.iOS project.
+# Add steps that install certificates, test, sign, and distribute an app, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/xamarin
+
+trigger:
+- master
+
+variables:
+#Really want Release here but this is okay for now
+  buildConfiguration: 'Development'
+  outputDirectory: '$(build.binariesDirectory)/$(buildConfiguration)'
+
+# Run Mobile Unit Tests Job
+stages:
+
+- stage: Build
+  displayName: Run Tests and Build
+  jobs:
+  - job: runMobileUnitTests
+    pool:
+      vmImage: 'macos-latest'
+    steps:
+  
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: 3.1.101
+        installationPath: $(Agent.ToolsDirectory)/dotnet
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: test
+        projects: '**/TaxJar.MobileUnitTests/TaxJar.MobileUnitTests.csproj'
+        arguments: '--configuration $(buildConfiguration) /p:CollectiveCoverage=true /p:CoverletOutputFormat=cobertura'
+        nobuild: true
+        publishTestResults: true
+
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+          reportgenerator -reports:'$(Build.SourcesDirectory)/TaxJar.MobileTests/coverage.cobertura.xml' -targetdir:'$(Build.SourcesDirectory)/CodeCoverage' -reporttypes:'HtmlInline_AzurePipelines;Cobertura;'
+      displayName: InstallReportGen
+
+    - task: PublishCodeCoverageResults@1
+      inputs:
+        summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'
+        reportDirectory: '$(Build.SourcesDirectory)/CodeCoverage'
+        codeCoverageTool: Cobertura
+
+# Build iOS Job
+# jobs:
+  - job: buildiOS
+    pool:
+      vmImage: 'macos-latest'
+    dependsOn: runMobileUnitTests
+    steps:
+  # To manually select a Xamarin SDK version on the Microsoft-hosted macOS agent,
+  # configure this task with the *Mono* version that is associated with the
+  # Xamarin SDK version that you need, and set the "enabled" property to true.
+  # See https://go.microsoft.com/fwlink/?linkid=871629
+    - script: |
+        sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh 6_6_0
+        sudo xcode-select -s /Applications/Xcode_11.3.1.app/Contents/Developer
+      displayName: 'Select the Xamarin SDK version'
+      enabled: true
+
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core sdk'
+      inputs:
+        packageType: sdk
+        version: 3.1.101
+        installationPath: $(Agent.ToolsDirectory)/dotnet
+
+    - task: InstallAppleCertificate@2
+      inputs:
+        certSecureFile: 'Roasted_Dev_Ad-Hoc_Distribution.p12'
+        certPwd: 'RoastedDevAdHocDistribution'
+        keychain: 'temp'
+
+    - task: InstallAppleProvisioningProfile@1
+      inputs:
+        provisioningProfileLocation: 'secureFiles'
+        provProfileSecureFile: 'Roasted_Dev_Ad-Hoc_Distribution.mobileprovision'
+
+    - task: NuGetToolInstaller@1
+      displayName: 'Use NuGet 4.3.0'
+      inputs:
+        checkLatest: true
+
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '**/*.sln'
+
+  # - task: Bash@3
+  #   inputs:
+  #     targetType: 'inline'
+  #     script: |
+  #       # Try up to three times to avoid failing due to a random CoreData error
+  #               # See: https://webcache.googleusercontent.com/search?q=cache:WNf6a8-x2yMJ:https://developercommunity.visualstudio.com/content/problem/678993/pipelines-1.html+&cd=3&hl=en&ct=clnk&gl=us
+  #               for i in {1..3}; do
+  #                 /Library/Frameworks/Mono.framework/Versions/Current/Commands/msbuild Roasted.sln /p:Configuration=$(buildConfiguration) /p:Platform=iPhone /p:BuildIpa=true /p:CodesignProvision=979e9105-34db-40a1-9fb4-cc611e784379 /t:Roasted_iOS 2>&1 | tee build.out
+              
+  #                 code="${PIPESTATUS[0]}"
+              
+  #                 if [[ $code == 0 ]]; then
+  #                   exit 0
+  #                 fi
+              
+  #                 if ! grep "error : CoreData: error:" build.out; then
+  #                   exit $code
+  #                 fi
+  #               done
+
+    - task: ios-bundle-version@1
+      displayName: 'Update Version Number'
+      inputs:
+        sourcePath: 'TaxJar.iOS/Info.plist'
+        versionCodeOption: 'buildid'
+        versionCode: '$(Build.BuildId)'
+        printFile: true
+
+    - task: Bash@3
+      displayName: 'Update Pipeline Build'
+      inputs:
+        targetType: 'inline'
+        script: |
+          buildPlist="TaxJar.iOS/Info.plist"
+          buildVersion=`/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" $buildPlist`
+          echo $buildVersion
+          echo "##vso[build.updatebuildnumber]$buildVersion"
+
+    - task: XamariniOS@2
+      displayName: 'Build iOS'
+      inputs:
+        solutionFile: '**/*iOS.csproj'
+        configuration: '$(buildConfiguration)'
+        buildForSimulator: false
+        packageApp: true
+        signingProvisioningProfileID: '979e9105-34db-40a1-9fb4-cc611e784379'
+
+    - task: CopyFiles@2
+      displayName: 'Copy IPA to Artifacts'
+      inputs:
+        SourceFolder: '$(agent.builddirectory)'
+        Contents: '**/*.ipa'
+        TargetFolder: '$(build.artifactstagingdirectory)'
+        flattenFolders: true
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'ios-drop'
+        publishLocation: 'Container'
+
+# Build Android Job
+  - job: buildAndroid
+    pool:
+      vmImage: 'macos-latest'
+    dependsOn: runMobileUnitTests
+    steps:
+    - script: sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh 6_6_0
+      displayName: 'Select the Xamarin SDK version'
+      enabled: true
+
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core sdk'
+      inputs:
+        packageType: sdk
+        version: 3.1.101
+        installationPath: $(Agent.ToolsDirectory)/dotnet
+
+    - task: NuGetToolInstaller@1
+      displayName: 'Use NuGet 4.3.0'
+      inputs:
+        checkLatest: true
+
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '**/*.sln'
+
+    - task: android-manifest-version@1
+      displayName: 'Update Version Number'
+      inputs:
+        sourcePath: 'TaxJar.Android/Properties/AndroidManifest.xml'
+        versionCodeOption: 'buildid'
+        versionCode: '$(Build.BuildId)'
+        printFile: true
+
+    - task: XamarinAndroid@1  
+      displayName: 'Build Android'
+      inputs:
+        projectFile: '**/*droid*.csproj'
+        outputDirectory: '$(outputDirectory)'
+        configuration: '$(buildConfiguration)'
+
+    - task: AndroidSigning@3
+      displayName: 'Sign Android'
+      inputs:
+        apkFiles: '**/*.apk'
+        apksignerKeystoreFile: 'TaxJarDev.keystore'
+        apksignerKeystorePassword: 'DevTaxJar8'
+        apksignerKeystoreAlias: 'TaxJarDev'
+        apksignerKeyPassword: 'DevTaxJar8'
+
+    - task: CopyFiles@2
+      displayName: 'Copy APKs to Artifacts'
+      inputs:
+        SourceFolder: '$(agent.builddirectory)'
+        Contents: '**/*.apk'
+        TargetFolder: '$(build.artifactstagingdirectory)'
+        flattenFolders: true
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'android-drop'
+        publishLocation: 'Container'
+
+# build Mobile Service
+  - job: buildMobileApi
+    pool:
+      vmImage: 'macos-latest'
+    dependsOn: runMobileUnitTests
+    steps: 
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core sdk'
+      inputs:
+        packageType: sdk
+        version: 3.1.101
+        installationPath: $(Agent.ToolsDirectory)/dotnet
+
+    - task: NuGetToolInstaller@1
+      displayName: 'Use NuGet 4.3.0'
+      inputs:
+        checkLatest: true
+
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '**/*.sln'
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'build'
+        projects: 'TaxJar.Api/TaxJar.Api.csproj'
+        configuration: '$(buildConfiguration)'
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: publish
+        publishWebProjects: True
+        arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+        zipAfterPublish: True
+      
+    # this code takes all the files in $(Build.ArtifactStagingDirectory) and uploads them as an artifact of your build.
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+        artifactName: 'services-drop'
+        publishLocation: 'Container'
+
+# - stage: Deploy
+#   displayName: Deploy to Development
+#   dependsOn: Build
+#   jobs:
+#     - deployment: deployiOS
+#       displayName: Deploy iOS
+#       pool: 
+#         vmImage: macos-latest
+#       environment: Development
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+
+#               - task: DownloadPipelineArtifact@2
+#                 inputs:
+#                   buildType: 'current'
+#                   artifactName: 'ios-drop'
+#                   downloadPath: '$(System.ArtifactsDirectory)/ios-drop'
+
+#               - task: AppCenterDistribute@3
+#                 inputs:
+#                   serverEndpoint: 'App Center'
+#                   appSlug: 'Lonely-Sasquatch/TaxJar.iOS'
+#                   appFile: '$(System.ArtifactsDirectory)/ios-drop/TaxJar.iOS.ipa'
+#                   releaseNotesOption: 'input'
+#                   releaseNotesInput: 'New Developer Release'
+#                   destinationType: 'groups'
+#                   distributionGroupId: '9cb1272a-7c00-438b-b8be-d79d54339858'
+      
+#     - deployment: deployAndroid
+#       displayName: Deploy Android
+#       pool: 
+#         vmImage: macos-latest
+#       environment: Development
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+
+#               - task: DownloadPipelineArtifact@2
+#                 inputs:
+#                   buildType: 'current'
+#                   artifactName: 'android-drop'
+#                   downloadPath: '$(System.ArtifactsDirectory)/android-drop'
+
+#               - task: AppCenterDistribute@3
+#                 inputs:
+#                   serverEndpoint: 'App Center'
+#                   appSlug: 'Lonely-Sasquatch/TaxJar.Android-Development'
+#                   appFile: '$(System.ArtifactsDirectory)/android-drop/com.lslabs.TaxJar.dev.apk'
+#                   releaseNotesOption: 'input'
+#                   releaseNotesInput: 'New Developer Release'
+#                   destinationType: 'groups'
+#                   distributionGroupId: '8334f273-8d70-4535-8f47-7b9039afeeab'
+
