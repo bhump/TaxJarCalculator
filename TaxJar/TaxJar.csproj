@@ -25,5 +25,8 @@
     <Folder Include="Repositories\" />
     <Folder Include="Clients\" />
     <Folder Include="Clients\Handlers\" />
+    <Folder Include="Constants\" />
+    <Folder Include="Models\Requests\" />
+    <Folder Include="Models\Responses\" />
   </ItemGroup>
 </Project>

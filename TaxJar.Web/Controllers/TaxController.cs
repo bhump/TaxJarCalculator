@@ -55,34 +55,41 @@ namespace TaxJar.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] TaxCalculationRequest request)
         {
-            if(request == null)
+            try
             {
-                return BadRequest("Invalid Request");
-            }
+                if (request == null)
+                {
+                    return BadRequest("Invalid Request");
+                }
 
-            if (string.IsNullOrEmpty(request.ClientId))
+                if (string.IsNullOrEmpty(request.ClientId))
+                {
+                    return BadRequest("ClientId is Required");
+                }
+
+                if (string.IsNullOrEmpty(request.ToCountry))
+                {
+                    return BadRequest("Ship to Country is Required");
+                }
+
+                if (string.IsNullOrEmpty(request.ToState))
+                {
+                    return BadRequest("Ship to State is Required");
+                }
+
+                if (request.Shipping == 0)
+                {
+                    return BadRequest("Total amount to Ship is Required");
+                }
+
+                TaxJarCalculateResponse calculation = await taxService.Calculate(request);
+
+                return Ok(JsonConvert.SerializeObject(calculation));
+            }
+            catch (Exception ex)
             {
-                return BadRequest("ClientId is Required");
+                return BadRequest();
             }
-
-            if(string.IsNullOrEmpty(request.ToCountry))
-            {
-                return BadRequest("Ship to Country is Required");
-            }
-
-            if(string.IsNullOrEmpty(request.ToState))
-            {
-                return BadRequest("Ship to State is Required");
-            }
-
-            if (request.Shipping == 0)
-            {
-                return BadRequest("Total amount to Ship is Required");
-            }
-
-            TaxJarCalculateResponse calculation = await taxService.Calculate(request);
-
-            return Ok(JsonConvert.SerializeObject(calculation));
         }
 
         // PUT api/values/5

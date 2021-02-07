@@ -2,12 +2,31 @@
 <ContentPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="TaxJar.Views.CalculatePage">
+    x:Class="TaxJar.Views.CalculatePage"
+    Title="Calculator">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Text="Calculate"
+            Command="{Binding CalculateTaxesCommand}"
+            IsEnabled="{Binding IsNotBusy}" />
+    </ContentPage.ToolbarItems>
     <ContentPage.Content>
-        <ScrollView>
+        <StackLayout>
             <StackLayout>
-                
+                <Entry Text="{Binding ToStreet}" Placeholder="To Street"></Entry>
+                <Entry Text="{Binding ToCity}" Placeholder="To City"></Entry>
+                <Entry Text="{Binding ToState}" Placeholder="To State"></Entry>
+                <Entry Text="{Binding ToZip}" Placeholder="To Zip"></Entry>
+                <Entry Text="{Binding ToCountry}" Placeholder="To Country"></Entry>
+                <Entry Text="{Binding Amount}" Placeholder="Amount"></Entry>
+                <Entry Text="{Binding Shipping}" Placeholder="Shipping"></Entry>
+                <Entry Text="{Binding Product}" Placeholder="The One and Only" IsEnabled="False"/>
             </StackLayout>
-        </ScrollView>
+            <ScrollView>
+                <StackLayout>
+
+                </StackLayout>
+            </ScrollView>
+        </StackLayout>
     </ContentPage.Content>
 </ContentPage>

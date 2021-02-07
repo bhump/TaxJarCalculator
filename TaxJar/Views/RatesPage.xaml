@@ -2,36 +2,73 @@
 <ContentPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="TaxJar.Views.RatesPage">
+    x:Class="TaxJar.Views.RatesPage"
+    Title="Rates">
     <ContentPage.ToolbarItems>
         <ToolbarItem
             Text="Go"
-            Command="{Binding GetTaxRateCommand}" />
+            Command="{Binding GetTaxRateCommand}" IsEnabled="{Binding IsNotBusy}"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
             <StackLayout>
-                <Entry
-                    Placeholder="Zip"
-                    Text=""></Entry>
-                <Entry
-                    Placeholder="Country"
-                    Text=""></Entry>
+                 <Entry Placeholder="Street" Text="{Binding StreetEntry}"></Entry>
+                 <Entry Placeholder="City" Text="{Binding CityEntry}"></Entry>
+                 <Entry Placeholder="State" Text="{Binding StateEntry}"></Entry>
+                 <Entry Placeholder="Zip" Text="{Binding ZipEntry}"></Entry>
+                 <Entry Placeholder="Country" Text="{Binding CountryEntry}"></Entry>
             </StackLayout>
             <ScrollView>
-                <StackLayout>
-                    <Label Text="{Binding State}"></Label>
-                    <Label Text="{Binding StateRate}"></Label>
-                    <Label Text="{Binding CountyRate}"></Label>
-                    <Label Text="{Binding CityRate}"></Label>
-                    <Label Text="{Binding CombindedDistrictRate}"></Label>
-                    <Label Text="{Binding CombindedRate}"></Label>
-                    <Label Text="{Binding FreightTaxable}"></Label>
-                    <Label Text="{Binding StandardRate}"></Label>
-                    <Label Text="{Binding ReducedRate}"></Label>
-                    <Label Text="{Binding SuperReducedRate}"></Label>
-                    <Label Text="{Binding ParkingRate}"></Label>
-                    <Label Text="{Binding DistanceSaleThreshold}"></Label>
+                <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                    <ActivityIndicator IsRunning="{Binding IsBusy}"></ActivityIndicator>
+                    <Label Text="City" FontSize="Title"/>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="{Binding City}" FontSize="Subtitle"></Label>
+                        <Label Text="{Binding CityRate}" FontSize="Subtitle"></Label>
+                    </StackLayout>
+                    <Label Text="State" FontSize="Title"/>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="{Binding State}" FontSize="Subtitle"></Label>
+                        <Label Text="{Binding StateRate}" FontSize="Subtitle"></Label>
+                    </StackLayout>
+                    <Label Text="County" FontSize="Title"/>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="{Binding County}" FontSize="Subtitle"></Label>
+                        <Label Text="{Binding CountyRate}" FontSize="Subtitle"></Label>
+                    </StackLayout>
+                    <Label Text="Add. Rates" FontSize="Title"/>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Combined District Rate: " FontSize="Subtitle"/>
+                        <Label Text="{Binding CombindedDistrictRate}" FontSize="Subtitle"></Label>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Standard Rate: " FontSize="Subtitle"/>
+                        <Label Text="{Binding StandardRate}" FontSize="Subtitle"></Label>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Combined Rate: " FontSize="Subtitle"/>
+                        <Label Text="{Binding CombindedRate}" FontSize="Subtitle"></Label>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Reduced Rate: " FontSize="Subtitle"/>
+                        <Label Text="{Binding ReducedRate}" FontSize="Subtitle"></Label>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Super Reduced Rate: " FontSize="Subtitle"/>
+                        <Label Text="{Binding SuperReducedRate}" FontSize="Subtitle"></Label>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Parking Rate: " FontSize="Subtitle"/>
+                        <Label Text="{Binding ParkingRate}" FontSize="Subtitle"></Label>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Freight Taxable: " FontSize="Subtitle"/>
+                        <Label Text="{Binding FreightTaxable}" FontSize="Subtitle"></Label>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Distance Sales Threshold: " FontSize="Subtitle"/>
+                        <Label Text="{Binding DistanceSaleThreshold}" FontSize="Subtitle"></Label>
+                    </StackLayout>
                 </StackLayout>
             </ScrollView>
         </StackLayout>

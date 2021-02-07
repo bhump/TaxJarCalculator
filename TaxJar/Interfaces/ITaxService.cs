@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Threading.Tasks;
+using TaxJar.Models;
+using TaxJar.Models.Requests;
+using TaxJar.Models.Responses;
+
 namespace TaxJar.Interfaces
 {
-    public class ITaxService
+    public interface ITaxService
     {
-        public ITaxService()
-        {
-        }
+        Task<TaxRateResponse> GetRates(GetTaxRateModel request);
+
+        Task<TaxCalculationResponse> Calculate(GetCalculationModel request);
     }
 }

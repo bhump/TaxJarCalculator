@@ -61,7 +61,7 @@ namespace TaxJar
 
             var calculateNavigationPage = new Xamarin.Forms.NavigationPage(viewFactory.Resolve<CalculateViewModel>())
             {
-                Title = "Calculate",
+                Title = "Calculator",
                 IconImageSource = ImageSource.FromFile("tab_about.png")
             };
 

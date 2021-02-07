@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using TaxJar.Interfaces;
+using TaxJar.Models;
+using TaxJar.Models.Requests;
 using Xamarin.Forms;
 
 namespace TaxJar.ViewModels
@@ -11,6 +14,41 @@ namespace TaxJar.ViewModels
 
         private readonly ITaxService taxService;
 
+        private string streetEntry;
+        public string StreetEntry
+        {
+            get => streetEntry;
+            set => SetProperty(ref streetEntry, value);
+        }
+
+        private string cityEntry;
+        public string CityEntry
+        {
+            get => cityEntry;
+            set => SetProperty(ref cityEntry, value);
+        }
+
+        private string countryEntry;
+        public string CountryEntry
+        {
+            get => countryEntry;
+            set => SetProperty(ref countryEntry, value);
+        }
+
+        private string zipEntry;
+        public string ZipEntry
+        {
+            get => zipEntry;
+            set => SetProperty(ref zipEntry, value);
+        }
+
+        private string stateEntry;
+        public string StateEntry
+        {
+            get => stateEntry;
+            set => SetProperty(ref stateEntry, value);
+        }
+
         private string state;
         public string State
         {
@@ -18,11 +56,25 @@ namespace TaxJar.ViewModels
             set => SetProperty(ref state, value);
         }
 
+        private string city;
+        public string City
+        {
+            get => city;
+            set => SetProperty(ref city, value);
+        }
+
         private string stateRate;
         public string StateRate
         {
             get => stateRate;
             set => SetProperty(ref stateRate, value);
+        }
+
+        private string county;
+        public string County
+        {
+            get => county;
+            set => SetProperty(ref county, value);
         }
 
         private string countyRate;
@@ -102,9 +154,39 @@ namespace TaxJar.ViewModels
             GetTaxRateCommand = new Command(() => GetTaxRate());
         }
 
-        private void GetTaxRate()
+        private async Task GetTaxRate()
         {
-            
+            IsBusy = true;
+            IsNotBusy = false;
+
+            var request = new GetTaxRateModel
+            {
+                Street = streetEntry,
+                City = cityEntry,
+                State = stateEntry,
+                Zip = zipEntry,
+                Country = countryEntry
+            };
+
+            var response = await taxService.GetRates(request);
+
+            State = response.State;
+            CityRate = response.CityRate.ToString();
+            City = response.City;
+            CombindedDistrictRate = response.CombinedDistrictRate.ToString();
+            CombindedRate = response.CombinedRate.ToString();
+            County = response.County;
+            CountyRate = response.CountyRate.ToString();
+            ParkingRate = response.ParkingRate.ToString();
+            StandardRate = response.StandardRate.ToString();
+            ReducedRate = response.ReducedRate.ToString();
+            SuperReducedRate = response.SuperReducedRate.ToString();
+            StateRate = response.StateRate.ToString();
+            FreightTaxable = response.FreightTaxable;
+            DistanceSaleThreshold = response.DistanceSaleThreshold.ToString();
+
+            IsBusy = false;
+            IsNotBusy = true;
         }
     }
 }

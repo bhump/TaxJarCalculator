@@ -54,6 +54,7 @@ namespace TaxJar.Api
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 }

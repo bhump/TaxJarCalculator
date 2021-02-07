@@ -4,6 +4,8 @@ using AutoMapper;
 using TaxJar.Clients;
 using TaxJar.Factories;
 using TaxJar.Interfaces;
+using TaxJar.Models;
+using TaxJar.Models.Requests;
 using TaxJar.Repositories;
 using TaxJar.Services;
 using TaxJar.ViewModels;
@@ -52,7 +54,8 @@ namespace TaxJar
         {
             var configuration = new MapperConfiguration(config =>
             {
-
+                config.CreateMap<GetTaxRateModel, TaxRateRequest>();
+                config.CreateMap<GetCalculationModel, TaxCalculationRequest>();
             });
 
             return configuration;
