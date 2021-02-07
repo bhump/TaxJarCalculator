@@ -52,108 +52,88 @@ stages:
 
 # Build iOS Job
 # jobs:
-  - job: buildiOS
-    pool:
-      vmImage: 'macos-latest'
-    dependsOn: runMobileUnitTests
-    steps:
-  # To manually select a Xamarin SDK version on the Microsoft-hosted macOS agent,
-  # configure this task with the *Mono* version that is associated with the
-  # Xamarin SDK version that you need, and set the "enabled" property to true.
-  # See https://go.microsoft.com/fwlink/?linkid=871629
-    - script: |
-        sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh 6_6_0
-        sudo xcode-select -s /Applications/Xcode_11.3.1.app/Contents/Developer
-      displayName: 'Select the Xamarin SDK version'
-      enabled: true
+  # - job: buildiOS
+  #   pool:
+  #     vmImage: 'macos-latest'
+  #   dependsOn: runMobileUnitTests
+  #   steps:
+  # # To manually select a Xamarin SDK version on the Microsoft-hosted macOS agent,
+  # # configure this task with the *Mono* version that is associated with the
+  # # Xamarin SDK version that you need, and set the "enabled" property to true.
+  # # See https://go.microsoft.com/fwlink/?linkid=871629
+  #   - script: |
+  #       sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh 6_6_0
+  #       sudo xcode-select -s /Applications/Xcode_11.3.1.app/Contents/Developer
+  #     displayName: 'Select the Xamarin SDK version'
+  #     enabled: true
 
-    - task: UseDotNet@2
-      displayName: 'Use .NET Core sdk'
-      inputs:
-        packageType: sdk
-        version: 3.1.101
-        installationPath: $(Agent.ToolsDirectory)/dotnet
+  #   - task: UseDotNet@2
+  #     displayName: 'Use .NET Core sdk'
+  #     inputs:
+  #       packageType: sdk
+  #       version: 3.1.101
+  #       installationPath: $(Agent.ToolsDirectory)/dotnet
 
-    - task: InstallAppleCertificate@2
-      inputs:
-        certSecureFile: 'Roasted_Dev_Ad-Hoc_Distribution.p12'
-        certPwd: 'RoastedDevAdHocDistribution'
-        keychain: 'temp'
+  #   - task: InstallAppleCertificate@2
+  #     inputs:
+  #       certSecureFile: 'p12'
+  #       certPwd: 'RoastedDevAdHocDistribution'
+  #       keychain: 'temp'
 
-    - task: InstallAppleProvisioningProfile@1
-      inputs:
-        provisioningProfileLocation: 'secureFiles'
-        provProfileSecureFile: 'Roasted_Dev_Ad-Hoc_Distribution.mobileprovision'
+  #   - task: InstallAppleProvisioningProfile@1
+  #     inputs:
+  #       provisioningProfileLocation: 'secureFiles'
+  #       provProfileSecureFile: 'mobileprovision'
 
-    - task: NuGetToolInstaller@1
-      displayName: 'Use NuGet 4.3.0'
-      inputs:
-        checkLatest: true
+  #   - task: NuGetToolInstaller@1
+  #     displayName: 'Use NuGet 4.3.0'
+  #     inputs:
+  #       checkLatest: true
 
-    - task: NuGetCommand@2
-      inputs:
-        restoreSolution: '**/*.sln'
+  #   - task: NuGetCommand@2
+  #     inputs:
+  #       restoreSolution: '**/*.sln'
 
-  # - task: Bash@3
-  #   inputs:
-  #     targetType: 'inline'
-  #     script: |
-  #       # Try up to three times to avoid failing due to a random CoreData error
-  #               # See: https://webcache.googleusercontent.com/search?q=cache:WNf6a8-x2yMJ:https://developercommunity.visualstudio.com/content/problem/678993/pipelines-1.html+&cd=3&hl=en&ct=clnk&gl=us
-  #               for i in {1..3}; do
-  #                 /Library/Frameworks/Mono.framework/Versions/Current/Commands/msbuild Roasted.sln /p:Configuration=$(buildConfiguration) /p:Platform=iPhone /p:BuildIpa=true /p:CodesignProvision=979e9105-34db-40a1-9fb4-cc611e784379 /t:Roasted_iOS 2>&1 | tee build.out
-              
-  #                 code="${PIPESTATUS[0]}"
-              
-  #                 if [[ $code == 0 ]]; then
-  #                   exit 0
-  #                 fi
-              
-  #                 if ! grep "error : CoreData: error:" build.out; then
-  #                   exit $code
-  #                 fi
-  #               done
+  #   - task: ios-bundle-version@1
+  #     displayName: 'Update Version Number'
+  #     inputs:
+  #       sourcePath: 'TaxJar.iOS/Info.plist'
+  #       versionCodeOption: 'buildid'
+  #       versionCode: '$(Build.BuildId)'
+  #       printFile: true
 
-    - task: ios-bundle-version@1
-      displayName: 'Update Version Number'
-      inputs:
-        sourcePath: 'TaxJar.iOS/Info.plist'
-        versionCodeOption: 'buildid'
-        versionCode: '$(Build.BuildId)'
-        printFile: true
+  #   - task: Bash@3
+  #     displayName: 'Update Pipeline Build'
+  #     inputs:
+  #       targetType: 'inline'
+  #       script: |
+  #         buildPlist="TaxJar.iOS/Info.plist"
+  #         buildVersion=`/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" $buildPlist`
+  #         echo $buildVersion
+  #         echo "##vso[build.updatebuildnumber]$buildVersion"
 
-    - task: Bash@3
-      displayName: 'Update Pipeline Build'
-      inputs:
-        targetType: 'inline'
-        script: |
-          buildPlist="TaxJar.iOS/Info.plist"
-          buildVersion=`/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" $buildPlist`
-          echo $buildVersion
-          echo "##vso[build.updatebuildnumber]$buildVersion"
+  #   - task: XamariniOS@2
+  #     displayName: 'Build iOS'
+  #     inputs:
+  #       solutionFile: '**/*iOS.csproj'
+  #       configuration: '$(buildConfiguration)'
+  #       buildForSimulator: false
+  #       packageApp: true
+  #       signingProvisioningProfileID: '979e9105-34db-40a1-9fb4-cc611e784379'
 
-    - task: XamariniOS@2
-      displayName: 'Build iOS'
-      inputs:
-        solutionFile: '**/*iOS.csproj'
-        configuration: '$(buildConfiguration)'
-        buildForSimulator: false
-        packageApp: true
-        signingProvisioningProfileID: '979e9105-34db-40a1-9fb4-cc611e784379'
+  #   - task: CopyFiles@2
+  #     displayName: 'Copy IPA to Artifacts'
+  #     inputs:
+  #       SourceFolder: '$(agent.builddirectory)'
+  #       Contents: '**/*.ipa'
+  #       TargetFolder: '$(build.artifactstagingdirectory)'
+  #       flattenFolders: true
 
-    - task: CopyFiles@2
-      displayName: 'Copy IPA to Artifacts'
-      inputs:
-        SourceFolder: '$(agent.builddirectory)'
-        Contents: '**/*.ipa'
-        TargetFolder: '$(build.artifactstagingdirectory)'
-        flattenFolders: true
-
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'ios-drop'
-        publishLocation: 'Container'
+  #   - task: PublishBuildArtifacts@1
+  #     inputs:
+  #       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+  #       ArtifactName: 'ios-drop'
+  #       publishLocation: 'Container'
 
 # Build Android Job
   - job: buildAndroid
