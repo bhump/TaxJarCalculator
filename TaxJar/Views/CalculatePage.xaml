@@ -13,18 +13,47 @@
     <ContentPage.Content>
         <StackLayout>
             <StackLayout>
-                <Entry Text="{Binding ToStreet}" Placeholder="To Street"></Entry>
-                <Entry Text="{Binding ToCity}" Placeholder="To City"></Entry>
-                <Entry Text="{Binding ToState}" Placeholder="To State"></Entry>
-                <Entry Text="{Binding ToZip}" Placeholder="To Zip"></Entry>
-                <Entry Text="{Binding ToCountry}" Placeholder="To Country"></Entry>
-                <Entry Text="{Binding Amount}" Placeholder="Amount"></Entry>
-                <Entry Text="{Binding Shipping}" Placeholder="Shipping"></Entry>
-                <Entry Text="{Binding Product}" Placeholder="The One and Only" IsEnabled="False"/>
+                <Entry Text="{Binding ToStreetEntry}" Placeholder="To Street"></Entry>
+                <Entry Text="{Binding ToCityEntry}" Placeholder="To City"></Entry>
+                <Entry Text="{Binding ToStateEntry}" Placeholder="To State"></Entry>
+                <Entry Text="{Binding ToZipEntry}" Placeholder="To Zip"></Entry>
+                <Entry Text="{Binding ToCountryEntry}" Placeholder="To Country"></Entry>
+                <Entry Text="{Binding AmountEntry}" Placeholder="Amount"></Entry>
+                <Entry Text="{Binding ShippingEntry}" Placeholder="Shipping"></Entry>
+                <Entry Placeholder="The One and Only" IsEnabled="False"/>
             </StackLayout>
             <ScrollView>
                 <StackLayout>
-
+                    <ActivityIndicator IsRunning="{Binding IsBusy}"></ActivityIndicator>
+                    <Label Text="City" FontSize="Title"/>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="{Binding City}" FontSize="Subtitle"></Label>
+                        <Label Text="{Binding CityRate}" FontSize="Subtitle"></Label>
+                    </StackLayout>
+                    <Label Text="State" FontSize="Title"/>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="{Binding State}" FontSize="Subtitle"></Label>
+                        <Label Text="{Binding StateRate}" FontSize="Subtitle"></Label>
+                    </StackLayout>
+                    <Label Text="County" FontSize="Title"/>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="{Binding County}" FontSize="Subtitle"></Label>
+                        <Label Text="{Binding CountyRate}" FontSize="Subtitle"></Label>
+                    </StackLayout>
+                    <Label Text="Add. Rates" FontSize="Title"/>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Special Rate: " FontSize="Subtitle"/>
+                        <Label Text="{Binding SpecialRate}" FontSize="Subtitle"></Label>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Combined Rate: " FontSize="Subtitle"/>
+                        <Label Text="{Binding CombindedRate}" FontSize="Subtitle"></Label>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Freight Taxable: " FontSize="Subtitle"/>
+                        <Label Text="{Binding FreightTaxable}" FontSize="Subtitle"></Label>
+                    </StackLayout>
+  
                 </StackLayout>
             </ScrollView>
         </StackLayout>

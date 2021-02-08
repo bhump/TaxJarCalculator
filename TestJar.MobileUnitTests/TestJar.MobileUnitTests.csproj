@@ -14,4 +14,10 @@
     <PackageReference Include="Moq" Version="4.16.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TaxJar\TaxJar.csproj" />
+  </ItemGroup>
 </Project>

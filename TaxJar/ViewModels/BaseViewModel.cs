@@ -14,8 +14,6 @@ namespace TaxJar.ViewModels
 {
     public class BaseViewModel : ExtendedBindableObject, IViewModel
     {
-        public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
-
         bool isBusy = false;
         public bool IsBusy
         {

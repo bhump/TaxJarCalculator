@@ -62,6 +62,7 @@ namespace TaxJar.Api.Controllers
                     return BadRequest("Invalid Request");
                 }
 
+                //TODO: Recommended to get clientId from Auth token/Identity unless an 'agent' is selecting clients in the app
                 if (string.IsNullOrEmpty(request.ClientId))
                 {
                     return BadRequest("ClientId is Required");
@@ -80,6 +81,14 @@ namespace TaxJar.Api.Controllers
                 if (request.Shipping == 0)
                 {
                     return BadRequest("Total amount to Ship is Required");
+                }
+
+                if(request.ToCountry == "US" || request.ToCountry == "CA")
+                {
+                    if(string.IsNullOrEmpty(request.ToZip))
+                    {
+                        return BadRequest("Zip is required if US or CA is the Country");
+                    }
                 }
 
                 TaxJarCalculateResponse calculation = await taxService.Calculate(request);

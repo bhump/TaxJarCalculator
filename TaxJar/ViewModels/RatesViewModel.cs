@@ -156,37 +156,48 @@ namespace TaxJar.ViewModels
 
         private async Task GetTaxRate()
         {
-            IsBusy = true;
-            IsNotBusy = false;
-
-            var request = new GetTaxRateModel
+            try
             {
-                Street = streetEntry,
-                City = cityEntry,
-                State = stateEntry,
-                Zip = zipEntry,
-                Country = countryEntry
-            };
+                IsBusy = true;
+                IsNotBusy = false;
 
-            var response = await taxService.GetRates(request);
+                var request = new GetTaxRateModel
+                {
+                    Street = streetEntry,
+                    City = cityEntry,
+                    State = stateEntry,
+                    Zip = zipEntry,
+                    Country = countryEntry
+                };
 
-            State = response.State;
-            CityRate = response.CityRate.ToString();
-            City = response.City;
-            CombindedDistrictRate = response.CombinedDistrictRate.ToString();
-            CombindedRate = response.CombinedRate.ToString();
-            County = response.County;
-            CountyRate = response.CountyRate.ToString();
-            ParkingRate = response.ParkingRate.ToString();
-            StandardRate = response.StandardRate.ToString();
-            ReducedRate = response.ReducedRate.ToString();
-            SuperReducedRate = response.SuperReducedRate.ToString();
-            StateRate = response.StateRate.ToString();
-            FreightTaxable = response.FreightTaxable;
-            DistanceSaleThreshold = response.DistanceSaleThreshold.ToString();
+                var response = await taxService.GetRates(request);
 
-            IsBusy = false;
-            IsNotBusy = true;
+                State = response.State;
+                CityRate = response.CityRate.ToString();
+                City = response.City;
+                CombindedDistrictRate = response.CombinedDistrictRate.ToString();
+                CombindedRate = response.CombinedRate.ToString();
+                County = response.County;
+                CountyRate = response.CountyRate.ToString();
+                ParkingRate = response.ParkingRate.ToString();
+                StandardRate = response.StandardRate.ToString();
+                ReducedRate = response.ReducedRate.ToString();
+                SuperReducedRate = response.SuperReducedRate.ToString();
+                StateRate = response.StateRate.ToString();
+                FreightTaxable = response.FreightTaxable;
+                DistanceSaleThreshold = response.DistanceSaleThreshold.ToString();
+
+                IsBusy = false;
+                IsNotBusy = true;
+            }
+            catch(Exception ex)
+            {
+                //TODO: Notify user something went wrong
+                Console.Write(ex);
+
+                IsBusy = false;
+                IsNotBusy = true;
+            }
         }
     }
 }
